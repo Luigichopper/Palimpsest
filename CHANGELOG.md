@@ -2,7 +2,45 @@
 
 All notable changes to the Palimpsest project will be documented in this file.
 
-## [Unreleased] - M3
+## [Unreleased] - M4
+### Added
+- Landmarks L0 (Cabin) & L1 (Annex Entrance Bunker):
+  - `LandmarkDef` and `landmarks.json` schema.
+  - `ProceduralDsl`: DSL utilities for boxes, fills, doors, lecterns, terminals, chests, and pots.
+  - `CabinBuilder`: Generates L0 Cabin with Terminal node `term0_cabin` and README written book with shuffled SGA acrostic pages (`EPITAPH`).
+  - `BunkerBuilder`: Generates L1 Subterranean Annex bunker embedded in terrain, iron blast door, 4 decorated ceramic pots, and Terminal node `term1_bunker`.
+  - `LandmarkPlacer`: Automated, idempotent worldgen placement using temporary forced chunk tickets on first activation in eligible worlds.
+  - Spawn-to-Cabin teleport on first player activation in eligible worlds.
+  - Commands: `/palimpsest dev scout` (surface Y, biome ID, slope) and `/palimpsest dev landmark place <id>`.
+- Annex Temporary Puzzle Rooms & Progression:
+  - `AnnexTemplate` and `AnnexBuilder` for generating temporary per-player Annex chambers (Waiting Room + Frame Room).
+  - P0.4 octal item-frame calibration code (Compass, Clock, Echo Shard).
+  - `AnnexManager`: Solves P0.4, sets `ch0.complete`, emits narrative collapse beat, evacuates player safely to Anchor, and cleans up temporary dimension.
+- Complete Chapter 0 Puzzle Chain:
+  - P0.0: Seed steganography tool `tools/make_seed_stego.py` embedding seed in red-channel LSB of `web/assets/recovery_notice.png`.
+  - P0.1: L0 Cabin lectern acrostic puzzle (`ch0.lectern_order.json`).
+  - P0.2: L0 Terminal login puzzle (`ch0.terminal_login.json`).
+  - P0.3: L1 Bunker door ceramic sherd cipher (`ch0.sherd_code.json`).
+  - P0.4: Annex Frame Room octal code (`ch0.frame_code.json`).
+  - VFS files: `/home/odette/notes.txt`, `/home/odette/sherd_legend.txt`, `/var/log/recovery.log`.
+  - `PuzzleSelfTest` dynamically verifies all Chapter 0 puzzle definitions against `private/answers.md`.
+- Website v0 (`web/`):
+  - Retro phosphor CRT terminal styling (`style.css`), dark mode, and high-contrast toggle.
+  - Landing page (`index.html`) with recovery notice and downloadable carrier graphic.
+  - Remote Terminal console web emulator (`terminal.html`).
+  - Research archive forum threads and incident logs (`archive.html`).
+  - Three-rung hint ladders for P0.0–P0.4 and WebCrypto in-browser stage decryption (`hints.html`, `decrypt.js`).
+  - Tool `tools/encrypt_stage.js` using PBKDF2 (SHA-256) and AES-256-GCM.
+- Field Journal (Basic):
+  - `JournalEntry`, `JournalManager`, and network payloads (`SyncJournalPayload`, `OpenJournalPayload`).
+  - Client-side `JournalScreen` CRT UI with entry navigation, metadata tags, and note viewing.
+  - Terminal integration: `journal` and `unlock <code>` commands.
+  - In-game command: `/palimpsest journal`.
+- Documentation:
+  - Created `docs/PUZZLES.md` (spoiler-free mechanism descriptions).
+  - Created `tools/landmark_check.py` regression check tool.
+
+## M3 - Anomaly Director v1
 ### Added
 - `TensionTracker`: Per-player tension budget tracker with multi-factor inputs (darkness, underground, isolation, safe signals from villagers/landmarks, and sleep attempts). Includes combat and damage suppression with cooldown tracking.
 - `AnomalyDirector`: Subsystem ticking at 1Hz, driving deterministic anomaly dispatch via seeded RNG (`createDeterministicRng(worldSeed, playerUUID, eventIndex)`), respecting configured `maxTier`, quiet windows (120s default), and budget costs.

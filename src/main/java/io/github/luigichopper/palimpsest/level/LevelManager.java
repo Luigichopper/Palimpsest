@@ -107,6 +107,10 @@ public class LevelManager {
     }
 
     public RuntimeLevelHandle openAnnex(ServerPlayer player) {
+        return openAnnex(player, io.github.luigichopper.palimpsest.annex.AnnexTemplate.CH0_FRAME_ROOM);
+    }
+
+    public RuntimeLevelHandle openAnnex(ServerPlayer player, io.github.luigichopper.palimpsest.annex.AnnexTemplate template) {
         Evacuator.recordAnchorPos(player);
         Identifier annexId = Identifier.fromNamespaceAndPath(Palimpsest.MOD_ID, "annex_" + player.getUUID().toString().replace("-", ""));
 
@@ -119,6 +123,14 @@ public class LevelManager {
 
         RuntimeLevelHandle handle = fantasy.openTemporaryLevel(annexId, config);
         activeHandles.put(annexId, handle);
+
+        ServerLevel annexWorld = server.getLevel(handle.getRegistryKey());
+        if (annexWorld != null) {
+            StoryState storyState = StoryState.get(server);
+            io.github.luigichopper.palimpsest.annex.AnnexBuilder.build(annexWorld, template, storyState);
+            player.teleportTo(annexWorld, 0.5, 65.0, 2.5, java.util.Collections.emptySet(), 0.0f, 0.0f, true);
+        }
+
         return handle;
     }
 

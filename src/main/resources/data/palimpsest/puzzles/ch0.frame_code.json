@@ -1,0 +1,28 @@
+{
+  "id": "ch0.frame_code",
+  "chapter": "ch0",
+  "kind": "item_frame_code",
+  "prompt_ref": "ch0.frame_code.prompt",
+  "verify": {
+    "algo": "sha256",
+    "salt": "ch0.frame_code:oct99z",
+    "hash": "288d2a12a769867a216e3755e8a43e2b886e5dd2eb18f9431ae8a24627f0702d"
+  },
+  "normalize": [
+    "octal_to_decimal",
+    "digits_only",
+    "trim"
+  ],
+  "on_solve": {
+    "grant_flags": [
+      "ch0.complete"
+    ],
+    "message_ref": "ch0.frame_code.solved"
+  },
+  "hints": [
+    "ch0.frame_code.hint1",
+    "ch0.frame_code.hint2",
+    "ch0.frame_code.hint3"
+  ],
+  "external": false
+}

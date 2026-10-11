@@ -1,0 +1,13 @@
+{
+  "path": "/home/odette/notes.txt",
+  "is_directory": false,
+  "content": "RECOVERY PROTOCOL - FIELD LOG\n-----------------------------\nWe couldn't rollback the corruption directly from node 0.\nThe primary containment bunker (L1) was sealed off at coordinates [340, -180].\nIf the reinforced gate is locked, align the four ceramic sherd values using the matrix in sherd_legend.txt.\nOnce inside, enter the annex terminal and align the observation frames.\n- Odette\n",
+  "requires_flags": [
+    "ch0.logged_in_odette"
+  ],
+  "on_read_flags": [
+    "ch0.odette_notes_read"
+  ],
+  "owner": "odette",
+  "permissions": "-rw-r--r--"
+}

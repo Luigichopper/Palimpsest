@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Palimpsest // Hint Ladders & Stage Decryption</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="decrypt.js"></script>
+</head>
+<body>
+  <div class="crt-overlay"></div>
+  <header>
+    <a href="index.html" class="logo">PALIMPSEST // RECOVERED ARCHIVE</a>
+    <nav>
+      <a href="index.html">Notice</a>
+      <a href="terminal.html">Terminal</a>
+      <a href="archive.html">Archive</a>
+      <a href="hints.html" class="active">Hints & Keys</a>
+      <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle High Contrast">Contrast</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>IN-BROWSER STAGE DECRYPTION (WEBCRYPTO AES-GCM)</h2>
+      <p>Each milestone's recovery notes are sealed with AES-256-GCM. The key is derived directly from your puzzle solution. The unencrypted text never leaves your device.</p>
+      
+      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
+        <select id="stageSelect" style="background: #080c10; color: var(--text-bright); border: 1px solid var(--border-color); padding: 0.6rem; font-family: var(--font-mono);">
+          <option value="ch0.stage1">Stage 1: Terminal Passphrase (P0.1 / P0.2)</option>
+          <option value="ch0.stage2">Stage 2: Bunker Hatch Code (P0.3)</option>
+          <option value="ch0.stage3">Stage 3: Annex Octal Calibration (P0.4)</option>
+        </select>
+        <input type="text" id="stageKeyInput" placeholder="Enter solution passphrase...">
+        <button class="action-btn" onclick="handleDecrypt()">Decrypt</button>
+      </div>
+
+      <div id="decryptResult" class="code-box" style="display: none;"></div>
+    </section>
+
+    <section class="card">
+      <h2>CHAPTER 0 THREE-RUNG HINT LADDERS</h2>
+      <p>Need guidance without spoiling the answer? Each puzzle features three progressive rungs: a gentle nudge, the intended method, and a near-answer.</p>
+
+      <!-- P0.0 -->
+      <h3 style="margin-top: 1.5rem;">P0.0: Seed Steganography</h3>
+      <details>
+        <summary>Rung 1: Gentle Nudge</summary>
+        <p>The image holds more than pixels and text. Standard graphical noise can conceal data at the bit layer.</p>
+      </details>
+      <details>
+        <summary>Rung 2: Method</summary>
+        <p>Inspect the least significant bit (LSB) of each red color channel. The payload begins with magic header 'PLMP' (4 bytes) followed by 2 bytes representing length.</p>
+      </details>
+      <details>
+        <summary>Rung 3: Near-Answer</summary>
+        <p>Use Python with PIL: iterate pixels (x, y), extract <code>pixel[0] & 1</code>, accumulate bits into bytes until the header 'PLMP' and length are read.</p>
+      </details>
+
+      <!-- P0.1 -->
+      <h3 style="margin-top: 1.5rem;">P0.1: L0 Cabin Lectern Book</h3>
+      <details>
+        <summary>Rung 1: Gentle Nudge</summary>
+        <p>Notice the Roman numerals (I through VII) and the bracketed letters at the start of each page.</p>
+      </details>
+      <details>
+        <summary>Rung 2: Method</summary>
+        <p>The pages are shuffled out of chronological sequence. Arrange the letters in order of Roman numeral I, II, III, IV, V, VI, VII.</p>
+      </details>
+      <details>
+        <summary>Rung 3: Near-Answer</summary>
+        <p>Page I: [E], Page II: [P], Page III: [I], Page IV: [T], Page V: [A], Page VI: [P], Page VII: [H]. The word is EPITAPH.</p>
+      </details>
+
+      <!-- P0.2 -->
+      <h3 style="margin-top: 1.5rem;">P0.2: L0 Terminal Login</h3>
+      <details>
+        <summary>Rung 1: Gentle Nudge</summary>
+        <p>Odette's notes mention she protected her terminal credentials with the book on the desk.</p>
+      </details>
+      <details>
+        <summary>Rung 2: Method</summary>
+        <p>Open the Terminal block and run <code>login &lt;username&gt; &lt;password&gt;</code>.</p>
+      </details>
+      <details>
+        <summary>Rung 3: Near-Answer</summary>
+        <p>Enter: <code>login odette epitaph</code>.</p>
+      </details>
+
+      <!-- P0.3 -->
+      <h3 style="margin-top: 1.5rem;">P0.3: L1 Bunker Door Pottery Code</h3>
+      <details>
+        <summary>Rung 1: Gentle Nudge</summary>
+        <p>Examine the decorated pots on pedestals outside the bunker entrance, and read <code>sherd_legend.txt</code> in Odette's home directory.</p>
+      </details>
+      <details>
+        <summary>Rung 2: Method</summary>
+        <p>The matrix assigns numerical digits to ceramic sherd faces (Archer=1, Danger=2, Prize=4, Skull=7). Read the pots left-to-right (West to East).</p>
+      </details>
+      <details>
+        <summary>Rung 3: Near-Answer</summary>
+        <p>Skull (7), Prize (4), Danger (2), Archer (1). The code is 7421.</p>
+      </details>
+
+      <!-- P0.4 -->
+      <h3 style="margin-top: 1.5rem;">P0.4: Annex Frame Room</h3>
+      <details>
+        <summary>Rung 1: Gentle Nudge</summary>
+        <p>Item frames in Minecraft click through 8 discrete rotational steps (0 to 7).</p>
+      </details>
+      <details>
+        <summary>Rung 2: Method</summary>
+        <p>The rotations of the Compass, Clock, and Echo Shard form a 3-digit octal number. Convert octal to decimal.</p>
+      </details>
+      <details>
+        <summary>Rung 3: Near-Answer</summary>
+        <p>Frame rotations are 5, 2, 7 -> octal 527. (5 &times; 64) + (2 &times; 8) + 7 = 343.</p>
+      </details>
+    </section>
+  </main>
+
+  <script>
+    async function handleDecrypt() {
+      const stage = document.getElementById("stageSelect").value;
+      const key = document.getElementById("stageKeyInput").value.trim();
+      const resBox = document.getElementById("decryptResult");
+
+      if (!key) {
+        alert("Please enter a solution passphrase.");
+        return;
+      }
+
+      resBox.style.display = "block";
+      resBox.textContent = "Fetching stage payload and deriving key...";
+
+      try {
+        const resp = await fetch(`data/${stage}.json`);
+        if (!resp.ok) {
+          throw new Error(`Stage payload data/${stage}.json not found.`);
+        }
+        const stageData = await resp.json();
+        const clearText = await decryptStage(key, stageData);
+        resBox.textContent = clearText;
+      } catch (err) {
+        resBox.textContent = "Error: " + err.message;
+      }
+    }
+  </script>
+
+  <footer>
+    <p>Palimpsest Recovery Project &bull; Unofficial Archive Restoration Node &bull; All Rights Reserved</p>
+  </footer>
+</body>
+</html>

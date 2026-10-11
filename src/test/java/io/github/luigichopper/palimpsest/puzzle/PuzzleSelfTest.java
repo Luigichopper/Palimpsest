@@ -125,23 +125,27 @@ public class PuzzleSelfTest {
 
         assertFalse(answers.isEmpty(), "answers.md should contain puzzle entries");
 
-        // Verify ch0.lectern_order matches
-        assertTrue(answers.containsKey("ch0.lectern_order"));
-        String raw = answers.get("ch0.lectern_order");
+        com.google.gson.Gson gson = new com.google.gson.Gson();
+        Path puzzlesDir = Paths.get("src/main/resources/data/palimpsest/puzzles");
+        if (Files.exists(puzzlesDir)) {
+            try (var stream = Files.list(puzzlesDir)) {
+                stream.filter(p -> p.toString().endsWith(".json")).forEach(p -> {
+                    try {
+                        String json = Files.readString(p);
+                        PuzzleDef def = gson.fromJson(json, PuzzleDef.class);
+                        engine.registerPuzzle(def);
+                    } catch (Exception e) {
+                        fail("Failed to parse " + p + ": " + e.getMessage());
+                    }
+                });
+            }
+        }
 
-        PuzzleDef puzzle = new PuzzleDef(
-            "ch0.lectern_order",
-            "ch0",
-            "text_answer",
-            "ch0.lectern_order.prompt",
-            new PuzzleDef.VerifyDef("SHA-256", "ch0.lectern_order:pep98f", "302fb2c7d62fffa604ec7018bbc4e2757ae0e15b3775ea84f4a8327c6350131c"),
-            List.of("lowercase", "trim", "collapse_ws", "strip_punct"),
-            null,
-            List.of(),
-            false
-        );
-        engine.registerPuzzle(puzzle);
-
-        assertTrue(engine.checkAnswer("ch0.lectern_order", raw));
+        for (Map.Entry<String, String> entry : answers.entrySet()) {
+            String puzzleId = entry.getKey();
+            String rawAnswer = entry.getValue();
+            assertTrue(engine.getPuzzle(puzzleId).isPresent(), "Missing puzzle definition for: " + puzzleId);
+            assertTrue(engine.checkAnswer(puzzleId, rawAnswer), "Puzzle answer failed verification for: " + puzzleId + " with raw answer: " + rawAnswer);
+        }
     }
 }

@@ -153,6 +153,49 @@ public class DebugCommands {
                             )
                         )
                     )
+                    .then(Commands.literal("scout")
+                        .executes(ctx -> {
+                            ServerPlayer player = ctx.getSource().getPlayerOrException();
+                            ServerLevel level = (ServerLevel) player.level();
+                            net.minecraft.core.BlockPos pos = player.blockPosition();
+                            int surfaceY = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE, pos.getX(), pos.getZ());
+                            String biome = level.getBiome(pos).unwrapKey().map(k -> k.identifier().toString()).orElse("unknown");
+                            int hNorth = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE, pos.getX(), pos.getZ() - 4);
+                            int hSouth = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE, pos.getX(), pos.getZ() + 4);
+                            int hEast = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE, pos.getX() + 4, pos.getZ());
+                            int hWest = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE, pos.getX() - 4, pos.getZ());
+                            double slope = Math.max(Math.abs(hEast - hWest) / 8.0, Math.abs(hSouth - hNorth) / 8.0);
+
+                            ctx.getSource().sendSuccess(() -> Component.literal(String.format(
+                                "Scout pos: [%d, %d, %d] | Surface Y: %d | Biome: %s | Slope: %.2f",
+                                pos.getX(), pos.getY(), pos.getZ(), surfaceY, biome, slope
+                            )), false);
+                            return 1;
+                        })
+                    )
+                    .then(Commands.literal("landmark")
+                        .then(Commands.literal("place")
+                            .then(Commands.argument("id", StringArgumentType.word())
+                                .executes(ctx -> {
+                                    String id = StringArgumentType.getString(ctx, "id");
+                                    io.github.luigichopper.palimpsest.landmark.LandmarkPlacer placer = new io.github.luigichopper.palimpsest.landmark.LandmarkPlacer();
+                                    io.github.luigichopper.palimpsest.landmark.LandmarkDef def = placer.getDefinitions().stream()
+                                        .filter(d -> d.id().equalsIgnoreCase(id))
+                                        .findFirst()
+                                        .orElse(null);
+                                    if (def == null) {
+                                        ctx.getSource().sendFailure(Component.literal("Unknown landmark id: " + id));
+                                        return 0;
+                                    }
+                                    StoryState state = StoryState.get(ctx.getSource().getServer());
+                                    ServerPlayer player = ctx.getSource().getPlayerOrException();
+                                    placer.placeLandmark((ServerLevel) player.level(), def, net.minecraft.util.RandomSource.create(), state);
+                                    ctx.getSource().sendSuccess(() -> Component.literal("Placed landmark: " + id), true);
+                                    return 1;
+                                })
+                            )
+                        )
+                    )
                 )
         );
     }

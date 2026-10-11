@@ -1,0 +1,30 @@
+{
+  "id": "ch0.terminal_login",
+  "chapter": "ch0",
+  "kind": "text_answer",
+  "prompt_ref": "ch0.terminal_login.prompt",
+  "verify": {
+    "algo": "sha256",
+    "salt": "ch0.terminal_login:pep31a",
+    "hash": "aafe5fe6a316e49614b2e772276ea1370b9b5007dfd71994792ca9aae9c53484"
+  },
+  "normalize": [
+    "lowercase",
+    "trim",
+    "collapse_ws",
+    "strip_punct"
+  ],
+  "on_solve": {
+    "grant_flags": [
+      "ch0.terminal_unlocked",
+      "ch0.logged_in_odette"
+    ],
+    "message_ref": "ch0.terminal_login.solved"
+  },
+  "hints": [
+    "ch0.terminal_login.hint1",
+    "ch0.terminal_login.hint2",
+    "ch0.terminal_login.hint3"
+  ],
+  "external": false
+}

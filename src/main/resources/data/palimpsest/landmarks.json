@@ -1,0 +1,18 @@
+{
+  "landmarks": [
+    {
+      "id": "L0",
+      "anchorX": 16,
+      "anchorZ": 16,
+      "builder": "cabin",
+      "note": "L0 Cabin: Derelict cabin near world spawn with Terminal and README lectern"
+    },
+    {
+      "id": "L1",
+      "anchorX": 340,
+      "anchorZ": -180,
+      "builder": "bunker",
+      "note": "L1 Annex Entrance: Bunker door in hillside with decorated pot lock"
+    }
+  ]
+}

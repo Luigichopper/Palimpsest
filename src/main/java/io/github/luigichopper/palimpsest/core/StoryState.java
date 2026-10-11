@@ -155,6 +155,10 @@ public class StoryState extends SavedData {
         }
     }
 
+    public void recordLandmarkPlaced(String landmarkId, int x, int y, int z) {
+        markLandmarkPlaced(landmarkId);
+    }
+
     // Puzzles
     public boolean isPuzzleSolved(String puzzleId) {
         return puzzleSolves.containsKey(puzzleId);

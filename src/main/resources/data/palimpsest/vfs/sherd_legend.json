@@ -1,0 +1,13 @@
+{
+  "path": "/home/odette/sherd_legend.txt",
+  "is_directory": false,
+  "content": "ARCHIVE CIPHER: CERAMIC MATRIX v0.8\n-----------------------------------\n[ARCHER] -> 1\n[DANGER] -> 2\n[PRIZE]  -> 4\n[SKULL]  -> 7\n\nNote: Sequence corresponds to external mounting plinths from West to East.\n",
+  "requires_flags": [
+    "ch0.logged_in_odette"
+  ],
+  "on_read_flags": [
+    "ch0.sherd_legend_read"
+  ],
+  "owner": "odette",
+  "permissions": "-rw-r--r--"
+}

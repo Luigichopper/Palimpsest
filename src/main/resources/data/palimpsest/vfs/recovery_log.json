@@ -1,0 +1,13 @@
+{
+  "path": "/var/log/recovery.log",
+  "is_directory": false,
+  "content": "[2026-10-11 00:00:01] PALIMPSEST KERNEL INIT\n[2026-10-11 00:00:02] Seed authentication: SUCCESS\n[2026-10-11 00:00:05] Anchor node established: [16, 64, 16]\n[2026-10-11 00:00:12] Subterranean Annex bunker placed at: [340, 64, -180]\n[2026-10-11 00:00:18] [WARN] Sector 0xff-ch0 isolated pending octal calibration.\n",
+  "requires_flags": [
+    "ch0.terminal_unlocked"
+  ],
+  "on_read_flags": [
+    "ch0.recovery_log_read"
+  ],
+  "owner": "root",
+  "permissions": "-rw-r--r--"
+}

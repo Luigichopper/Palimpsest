@@ -59,7 +59,7 @@ public class TerminalManager {
         }
 
         StoryState storyState = StoryState.get(player.level());
-        TerminalResponse response = execute(session, storyState, playerId, rawLine);
+        TerminalResponse response = execute(session, storyState, player, playerId, rawLine);
 
         ServerPlayNetworking.send(player, new TerminalOutputPayload(
             pos,
@@ -72,6 +72,10 @@ public class TerminalManager {
     public record TerminalResponse(String output, boolean isError, boolean clearScreen) {}
 
     public TerminalResponse execute(TerminalSession session, StoryState storyState, UUID playerId, String rawLine) {
+        return execute(session, storyState, null, playerId, rawLine);
+    }
+
+    public TerminalResponse execute(TerminalSession session, StoryState storyState, net.minecraft.server.level.ServerPlayer player, UUID playerId, String rawLine) {
         if (rawLine == null || rawLine.trim().isEmpty()) {
             return new TerminalResponse("", false, false);
         }
@@ -100,6 +104,8 @@ public class TerminalManager {
                         "  logout               - Sign out back to guest\n" +
                         "  status               - Show system and integrity status\n" +
                         "  checksum <file>      - Compute SHA-256 integrity hash\n" +
+                        "  unlock <code>        - Submit cipher or calibration code\n" +
+                        "  journal              - List discovered field notes\n" +
                         "  mount <backup>       - Mount an archive backup\n" +
                         "  umount               - Unmount the active container\n" +
                         "  diff <a> <b>         - Compare two files\n" +
@@ -198,6 +204,16 @@ public class TerminalManager {
                     }
                 }
 
+                if (player != null) {
+                    io.github.luigichopper.palimpsest.journal.JournalManager.get().recordDiscovery(
+                        player,
+                        file.getPath(),
+                        file.getPath(),
+                        file.getContent(),
+                        "terminal"
+                    );
+                }
+
                 return new TerminalResponse(file.getContent(), false, false);
             }
 
@@ -224,6 +240,15 @@ public class TerminalManager {
                             }
                             storyState.markPuzzleSolved("ch0.lectern_order");
                         }
+                        if (player != null) {
+                            io.github.luigichopper.palimpsest.journal.JournalManager.get().recordDiscovery(
+                                player,
+                                "p0.1_solved",
+                                "Password Solved: EPITAPH",
+                                "Decoded from Cabin README lectern acrostic.\nGranted access to Odette's console session.",
+                                "puzzle"
+                            );
+                        }
                         return new TerminalResponse(
                             "Authentication successful. Session elevated to 'odette'.\n" +
                             "Home directory: /home/odette\n",
@@ -241,6 +266,59 @@ public class TerminalManager {
                 session.setCurrentUser("guest");
                 session.setCurrentDir("/home/guest");
                 return new TerminalResponse("Logged out. Current session: guest\n", false, false);
+            }
+
+            case "unlock" -> {
+                if (args.isEmpty()) {
+                    return new TerminalResponse("Usage: unlock <code>\n", true, false);
+                }
+                String code = args.get(0);
+                if (storyState != null && playerId != null) {
+                    // Test sherd code (P0.3)
+                    if (PuzzleEngine.get().checkAnswer("ch0.sherd_code", code)) {
+                        storyState.setWorldFlag("ch0.bunker_unlocked");
+                        storyState.setPlayerFlag(playerId, "ch0.bunker_unlocked");
+                        storyState.markPuzzleSolved("ch0.sherd_code");
+                        if (player != null) {
+                            io.github.luigichopper.palimpsest.journal.JournalManager.get().recordDiscovery(
+                                player,
+                                "ch0.sherd_code",
+                                "Bunker Code: 7421",
+                                "Decoded from pottery sherds outside L1 bunker.\nReinforced containment door opened.",
+                                "puzzle"
+                            );
+                        }
+                        return new TerminalResponse("[OK] Ceramic cipher accepted. Bunker hatch unlocked.\n", false, false);
+                    }
+                    // Test frame code (P0.4)
+                    if (PuzzleEngine.get().checkAnswer("ch0.frame_code", code)) {
+                        storyState.setWorldFlag("ch0.complete");
+                        storyState.setPlayerFlag(playerId, "ch0.complete");
+                        storyState.markPuzzleSolved("ch0.frame_code");
+                        if (player != null) {
+                            io.github.luigichopper.palimpsest.annex.AnnexManager.get().completeAnnex(player);
+                        }
+                        return new TerminalResponse("[OK] Octal calibration accepted. Partition collapsing...\n", false, false);
+                    }
+                }
+                return new TerminalResponse("unlock: invalid calibration code.\n", true, false);
+            }
+
+            case "journal" -> {
+                if (player != null) {
+                    var entries = io.github.luigichopper.palimpsest.journal.JournalManager.get().getEntries(player.getUUID());
+                    StringBuilder sb = new StringBuilder("=== FIELD JOURNAL DISCOVERIES ===\n");
+                    if (entries.isEmpty()) {
+                        sb.append("No entries recorded. Read books and files to discover notes.\n");
+                    } else {
+                        for (var e : entries) {
+                            sb.append(" * [").append(e.tag()).append("] ").append(e.title()).append("\n");
+                        }
+                    }
+                    sb.append("\nTip: Press [J] in-game to open the full visual Journal Screen.\n");
+                    return new TerminalResponse(sb.toString(), false, false);
+                }
+                return new TerminalResponse("Journal not available in headless context.\n", false, false);
             }
 
             case "status" -> {

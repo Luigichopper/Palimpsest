@@ -1,0 +1,27 @@
+{
+  "id": "ch0.sherd_code",
+  "chapter": "ch0",
+  "kind": "sherd_code",
+  "prompt_ref": "ch0.sherd_code.prompt",
+  "verify": {
+    "algo": "sha256",
+    "salt": "ch0.sherd_code:pot88x",
+    "hash": "6b103fac0c7fffbf99bd97828d8e561a526fd7ca6f6a03bac0228f1eaaba24c9"
+  },
+  "normalize": [
+    "digits_only",
+    "trim"
+  ],
+  "on_solve": {
+    "grant_flags": [
+      "ch0.bunker_unlocked"
+    ],
+    "message_ref": "ch0.sherd_code.solved"
+  },
+  "hints": [
+    "ch0.sherd_code.hint1",
+    "ch0.sherd_code.hint2",
+    "ch0.sherd_code.hint3"
+  ],
+  "external": false
+}

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Palimpsest // Remote Terminal</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="decrypt.js"></script>
+  <style>
+    .terminal-window {
+      background: #05080c;
+      border: 1px solid var(--text-dim);
+      padding: 1.5rem;
+      min-height: 400px;
+      display: flex;
+      flex-direction: column;
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      box-shadow: 0 0 20px rgba(56, 239, 125, 0.1);
+    }
+    .terminal-output {
+      flex: 1;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      margin-bottom: 1rem;
+      max-height: 500px;
+    }
+    .terminal-input-row {
+      display: flex;
+      align-items: center;
+    }
+    .terminal-prompt {
+      color: var(--text-bright);
+      margin-right: 0.5rem;
+      user-select: none;
+    }
+    .terminal-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-bright);
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="crt-overlay"></div>
+  <header>
+    <a href="index.html" class="logo">PALIMPSEST // RECOVERED ARCHIVE</a>
+    <nav>
+      <a href="index.html">Notice</a>
+      <a href="terminal.html" class="active">Terminal</a>
+      <a href="archive.html">Archive</a>
+      <a href="hints.html">Hints & Keys</a>
+      <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle High Contrast">Contrast</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>ODETTE RECOVERY CONSOLE [REMOTE MIRROR]</h2>
+      <p>Simulated web bridge into node <span class="highlight">/dev/terminal0</span>. Type <span class="highlight">help</span> for available commands.</p>
+
+      <div class="terminal-window">
+        <div id="output" class="terminal-output">PALIMPSEST RECOVERY OS v0.9 (TTY 0)
+Connected to host: palimpsest-node-0.local
+Type 'help' for commands, or 'login odette &lt;pass&gt;' to access private logs.
+</div>
+        <div class="terminal-input-row">
+          <span class="terminal-prompt" id="prompt">guest@archive:~$</span>
+          <input type="text" id="cmdInput" class="terminal-input" autofocus autocomplete="off" spellcheck="false">
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const output = document.getElementById("output");
+    const cmdInput = document.getElementById("cmdInput");
+    const prompt = document.getElementById("prompt");
+
+    let currentUser = "guest";
+    let cwd = "/home/guest";
+
+    function print(text) {
+      output.textContent += text + "\n";
+      output.scrollTop = output.scrollHeight;
+    }
+
+    cmdInput.addEventListener("keydown", async (e) => {
+      if (e.key === "Enter") {
+        const line = cmdInput.value.trim();
+        cmdInput.value = "";
+        print(`${prompt.textContent} ${line}`);
+        if (!line) return;
+
+        const parts = line.split(/\s+/);
+        const cmd = parts[0].toLowerCase();
+
+        switch (cmd) {
+          case "help":
+            print("Available commands:\n  help      - display command list\n  whoami    - print current user\n  pwd       - print current directory\n  ls        - list directory files\n  cat <file>- view file contents\n  login <user> <pass> - authenticate\n  logout    - return to guest\n  clear     - clear screen");
+            break;
+          case "whoami":
+            print(currentUser);
+            break;
+          case "pwd":
+            print(cwd);
+            break;
+          case "clear":
+            output.textContent = "";
+            break;
+          case "ls":
+            if (currentUser === "odette") {
+              print("notes.txt  sherd_legend.txt");
+            } else {
+              print("welcome.txt");
+            }
+            break;
+          case "cat":
+            const file = parts[1];
+            if (!file) {
+              print("Usage: cat <filename>");
+            } else if (file === "welcome.txt") {
+              print("Welcome to Palimpsest Recovery Terminal.\nPlease log in with Odette's credentials to view field reports.");
+            } else if (currentUser === "odette" && file === "notes.txt") {
+              print("RECOVERY FIELD LOG:\nReinforced bunker gate located at coordinates [340, -180].\nDecode pottery sherds using sherd_legend.txt.");
+            } else if (currentUser === "odette" && file === "sherd_legend.txt") {
+              print("SHERD MATRIX:\nARCHER = 1 | DANGER = 2 | PRIZE = 4 | SKULL = 7");
+            } else {
+              print(`cat: ${file}: Permission denied or file not found`);
+            }
+            break;
+          case "login":
+            if (parts.length >= 3 && parts[1].toLowerCase() === "odette" && parts[2].toLowerCase() === "epitaph") {
+              currentUser = "odette";
+              cwd = "/home/odette";
+              prompt.textContent = "odette@archive:~$";
+              print("[OK] Authentication successful. Welcome Odette.");
+            } else {
+              print("Login incorrect.");
+            }
+            break;
+          case "logout":
+            currentUser = "guest";
+            cwd = "/home/guest";
+            prompt.textContent = "guest@archive:~$";
+            print("Logged out.");
+            break;
+          default:
+            print(`Command not found: ${cmd}. Type 'help' for command list.`);
+        }
+      }
+    });
+  </script>
+
+  <footer>
+    <p>Palimpsest Recovery Project &bull; Unofficial Archive Restoration Node &bull; All Rights Reserved</p>
+  </footer>
+</body>
+</html>

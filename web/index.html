@@ -1,10 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Palimpsest Archive</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Palimpsest // Recovered Archive</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="decrypt.js"></script>
 </head>
 <body>
-    <div id="terminal">Palimpsest Recovery Console [Pending M4]</div>
+  <div class="crt-overlay"></div>
+  <header>
+    <a href="index.html" class="logo">PALIMPSEST // RECOVERED ARCHIVE</a>
+    <nav>
+      <a href="index.html" class="active">Notice</a>
+      <a href="terminal.html">Terminal</a>
+      <a href="archive.html">Archive</a>
+      <a href="hints.html">Hints & Keys</a>
+      <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle High Contrast">Contrast</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>RECOVERY NOTICE: PARTITION 0xFF-CH0</h2>
+      <p>An orphaned Minecraft world backup has been located and indexed under identifier <span class="highlight">Wren_Final_Singleplayer</span>. System state appears partially overwritten.</p>
+      
+      <p>To begin restoration in Minecraft 26.3:</p>
+      <ol style="margin-left: 2rem; margin-bottom: 1rem;">
+        <li>Extract the required world seed from the recovery carrier graphic below.</li>
+        <li>Create a singleplayer world using the exact extracted seed.</li>
+        <li>Load the archive mod. The system will activate upon matching the seed hash.</li>
+      </ol>
+
+      <div class="code-box">
+INTEGRITY VERIFICATION:
+Target Archive: Wren_Final_Singleplayer [MC 26.3]
+Status        : Dormant until matching seed activation
+Carrier Image : assets/recovery_notice.png
+Stego Encoding: Red-channel LSB (Magic: PLMP)
+      </div>
+
+      <img src="assets/recovery_notice.png" alt="Palimpsest Recovery Notice Carrier Graphic" class="stego-preview">
+      
+      <p><em>"Recovered archive. Integrity: verified. The key is in the picture."</em></p>
+      <a href="assets/recovery_notice.png" download class="action-btn" style="display: inline-block; text-decoration: none;">Download Carrier Image (PNG)</a>
+    </section>
+
+    <section class="card">
+      <h3>Need Help Extracting?</h3>
+      <p>Use Python with Pillow or any standard LSB steganography tool to inspect the red channel LSBs of the carrier image. For hints or if you've already found clues inside the world, consult the <a href="hints.html" style="color: var(--text-bright);">Hints & Keys</a> section.</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>Palimpsest Recovery Project &bull; Unofficial Archive Restoration Node &bull; All Rights Reserved</p>
+  </footer>
 </body>
 </html>

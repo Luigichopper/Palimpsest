@@ -44,6 +44,14 @@ public class Palimpsest implements ModInitializer {
             io.github.luigichopper.palimpsest.net.TerminalOutputPayload.TYPE,
             io.github.luigichopper.palimpsest.net.TerminalOutputPayload.STREAM_CODEC
         );
+        net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.clientboundPlay().register(
+            io.github.luigichopper.palimpsest.net.SyncJournalPayload.TYPE,
+            io.github.luigichopper.palimpsest.net.SyncJournalPayload.STREAM_CODEC
+        );
+        net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.clientboundPlay().register(
+            io.github.luigichopper.palimpsest.net.OpenJournalPayload.TYPE,
+            io.github.luigichopper.palimpsest.net.OpenJournalPayload.STREAM_CODEC
+        );
         net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.serverboundPlay().register(
             io.github.luigichopper.palimpsest.net.TerminalCommandPayload.TYPE,
             io.github.luigichopper.palimpsest.net.TerminalCommandPayload.STREAM_CODEC
@@ -116,12 +124,22 @@ public class Palimpsest implements ModInitializer {
             Evacuator.checkPlayerOnJoin(player);
 
             long seed = server.overworld().getSeed();
-            boolean eligible = seedGate.isEligible(seed);
+            boolean eligible = seedGate.isEligible(seed) || PalimpsestConfig.get().devMode;
+            StoryState state = StoryState.get(server);
             if (!eligible) {
-                StoryState state = StoryState.get(server);
                 if (!state.hasWorldFlag("archive:notice_shown")) {
                     state.setWorldFlag("archive:notice_shown");
                     player.sendSystemMessage(Component.literal("§7[ARCHIVE: no matching backup found]§r"));
+                }
+            } else {
+                io.github.luigichopper.palimpsest.landmark.LandmarkPlacer placer = new io.github.luigichopper.palimpsest.landmark.LandmarkPlacer();
+                placer.placeAllIfEligible(server, state);
+
+                if (!state.hasWorldFlag("ch0.first_spawn_tp")) {
+                    state.setWorldFlag("ch0.first_spawn_tp");
+                    int y = server.overworld().getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE, 16, 16);
+                    player.teleportTo(server.overworld(), 16.5, Math.max(64, y) + 1, 19.5, java.util.Collections.emptySet(), 180.0f, 0.0f, true);
+                    player.sendSystemMessage(Component.literal("§6[PALIMPSEST: Wake at Cabin L0]§r"));
                 }
             }
         });
@@ -135,6 +153,16 @@ public class Palimpsest implements ModInitializer {
                             context.getSource().sendSuccess(
                                 () -> Component.literal("Palimpsest: pong! Archive connection active."),
                                 false
+                            );
+                            return 1;
+                        })
+                    )
+                    .then(Commands.literal("journal")
+                        .executes(context -> {
+                            ServerPlayer player = context.getSource().getPlayerOrException();
+                            net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(
+                                player,
+                                new io.github.luigichopper.palimpsest.net.OpenJournalPayload()
                             );
                             return 1;
                         })

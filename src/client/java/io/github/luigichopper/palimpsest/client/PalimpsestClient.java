@@ -34,5 +34,25 @@ public class PalimpsestClient implements ClientModInitializer {
                 });
             }
         );
+
+        // Register SyncJournalPayload receiver to store received journal entries
+        net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.registerGlobalReceiver(
+            io.github.luigichopper.palimpsest.net.SyncJournalPayload.TYPE,
+            (payload, context) -> {
+                context.client().execute(() -> {
+                    io.github.luigichopper.palimpsest.journal.JournalManager.CLIENT_ENTRIES.add(payload.entry());
+                });
+            }
+        );
+
+        // Register OpenJournalPayload receiver to open JournalScreen
+        net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.registerGlobalReceiver(
+            io.github.luigichopper.palimpsest.net.OpenJournalPayload.TYPE,
+            (payload, context) -> {
+                context.client().execute(() -> {
+                    net.minecraft.client.Minecraft.getInstance().gui.setScreen(new JournalScreen());
+                });
+            }
+        );
     }
 }
