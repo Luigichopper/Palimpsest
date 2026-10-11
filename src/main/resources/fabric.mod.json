@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "palimpsest",
+  "version": "${version}",
+  "name": "Palimpsest",
+  "description": "A horror ARG mod where Minecraft's own save system is the monster.",
+  "authors": [
+    "Luigi"
+  ],
+  "contact": {},
+  "license": "TODO",
+  "icon": "assets/palimpsest/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "io.github.luigichopper.palimpsest.Palimpsest"
+    ],
+    "client": [
+      "io.github.luigichopper.palimpsest.client.PalimpsestClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "fabric-api": "*",
+    "fantasy": ">=0.8.4",
+    "minecraft": "26.3",
+    "java": ">=25"
+  }
+}
