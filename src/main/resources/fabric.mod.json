@@ -2,13 +2,13 @@
   "schemaVersion": 1,
   "id": "palimpsest",
   "version": "${version}",
-  "name": "Palimpsest",
+  "name": "Palimpsest: Recovered Archive",
   "description": "A horror ARG mod where Minecraft's own save system is the monster.",
   "authors": [
     "Luigi"
   ],
   "contact": {},
-  "license": "TODO",
+  "license": "All-Rights-Reserved",
   "icon": "assets/palimpsest/icon.png",
   "environment": "*",
   "entrypoints": {
