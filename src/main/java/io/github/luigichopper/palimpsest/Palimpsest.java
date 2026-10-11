@@ -77,9 +77,37 @@ public class Palimpsest implements ModInitializer {
             LevelManager.initialize(server);
         });
 
-        // Register TaskScheduler tick
+        // Register TaskScheduler and AnomalyDirector tick
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             TaskScheduler.get().tick(server);
+            io.github.luigichopper.palimpsest.director.AnomalyDirector.get().tick(server);
+        });
+
+        // Director event listeners: combat and damage tracking
+        net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> {
+            long now = System.currentTimeMillis();
+            if (entity instanceof ServerPlayer player) {
+                io.github.luigichopper.palimpsest.director.AnomalyDirector.get().getTracker(player.getUUID()).recordDamage(now);
+            }
+            if (source.getEntity() instanceof ServerPlayer attacker) {
+                io.github.luigichopper.palimpsest.director.AnomalyDirector.get().getTracker(attacker.getUUID()).recordCombat(now);
+            }
+            return true;
+        });
+
+        // Director sleep attempt tracking
+        net.fabricmc.fabric.api.entity.event.v1.EntitySleepEvents.START_SLEEPING.register((entity, pos) -> {
+            if (entity instanceof ServerPlayer player) {
+                io.github.luigichopper.palimpsest.director.AnomalyDirector.get().getTracker(player.getUUID()).recordSleepAttempt(System.currentTimeMillis());
+            }
+        });
+
+        // Director sound recording on block break (for SoundOfYou)
+        net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents.AFTER.register((level, player, pos, state, be) -> {
+            if (player instanceof ServerPlayer serverPlayer) {
+                io.github.luigichopper.palimpsest.director.AnomalyDirector.get().getTracker(serverPlayer.getUUID())
+                    .setLastPlayerSound(state.getSoundType().getBreakSound());
+            }
         });
 
         // Player join events (Evacuator safety check and SeedGate notification)

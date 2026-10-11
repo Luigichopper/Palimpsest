@@ -2,7 +2,24 @@
 
 All notable changes to the Palimpsest project will be documented in this file.
 
-## [Unreleased] - M2
+## [Unreleased] - M3
+### Added
+- `TensionTracker`: Per-player tension budget tracker with multi-factor inputs (darkness, underground, isolation, safe signals from villagers/landmarks, and sleep attempts). Includes combat and damage suppression with cooldown tracking.
+- `AnomalyDirector`: Subsystem ticking at 1Hz, driving deterministic anomaly dispatch via seeded RNG (`createDeterministicRng(worldSeed, playerUUID, eventIndex)`), respecting configured `maxTier`, quiet windows (120s default), and budget costs.
+- 8 Core Initial Anomalies:
+  - `DoorAjarAnomaly` (Tier 1): Silently cracks open an untargeted door behind the player.
+  - `TorchOutAnomaly` (Tier 1): Extinguishes a torch behind the player into an unlit redstone/placeholder state with smoke particles.
+  - `FootstepsBehindAnomaly` (Tier 1): Plays phantom directional step sounds 3-6 blocks directly behind the player.
+  - `SoundOfYouAnomaly` (Tier 2): Replays the player's last recorded action sound 10 blocks away.
+  - `ItemFrameTurnAnomaly` (Tier 1): Silently increments the rotation of an item in a nearby item frame outside player FOV.
+  - `SignChangeAnomaly` (Tier 2): Temporarily corrupts a sign line with an encrypted/garbled message or cryptic note.
+  - `WatcherAnomaly` (Tier 2): Spawns a silent, frozen, invulnerable mannequin at the edge of vision that vanishes when looked at or approached.
+  - `WrongHourAnomaly` (Tier 1): Sends a transient client-side time packet causing sky or clock desynchronization.
+- Config and Accessibility Integration: Wired into `PalimpsestConfig` (`maxTier`, `quietWindowSeconds`, `disableFlashingLights`, `disableJumpscares`).
+- Debug Commands: `/palimpsest dev director fire <anomaly>` and `/palimpsest dev director tension <amount>`.
+- Automated tests: `DirectorSimulationTest` validating all 8 anomalies, tier 0 suppression, 1-hour session density & quiet window adherence, combat/damage suppression, and deterministic replay.
+
+## M2 - Terminals & Puzzles
 ### Added
 - `TerminalBlock` and `TerminalBlockEntity`: In-game terminal console block with custom node identification and state persistence.
 - `TerminalScreen`: Client retro CRT phosphor terminal UI with scrollback buffer, blinking cursor, typing clicks, command history, tab auto-completion, and escape exit.

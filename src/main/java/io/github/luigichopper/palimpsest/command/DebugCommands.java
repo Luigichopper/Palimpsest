@@ -124,6 +124,35 @@ public class DebugCommands {
                             )
                         )
                     )
+                    .then(Commands.literal("director")
+                        .then(Commands.literal("fire")
+                            .then(Commands.argument("anomaly", StringArgumentType.word())
+                                .executes(ctx -> {
+                                    String anomalyId = StringArgumentType.getString(ctx, "anomaly");
+                                    ServerPlayer player = ctx.getSource().getPlayerOrException();
+                                    boolean fired = io.github.luigichopper.palimpsest.director.AnomalyDirector.get().fireAnomalyDirectly(player, anomalyId);
+                                    if (fired) {
+                                        ctx.getSource().sendSuccess(() -> Component.literal("Fired anomaly: " + anomalyId), true);
+                                        return 1;
+                                    } else {
+                                        ctx.getSource().sendFailure(Component.literal("Failed to fire anomaly (not found or precondition failed): " + anomalyId));
+                                        return 0;
+                                    }
+                                })
+                            )
+                        )
+                        .then(Commands.literal("tension")
+                            .then(Commands.argument("amount", com.mojang.brigadier.arguments.FloatArgumentType.floatArg(0, 100))
+                                .executes(ctx -> {
+                                    float amt = com.mojang.brigadier.arguments.FloatArgumentType.getFloat(ctx, "amount");
+                                    ServerPlayer player = ctx.getSource().getPlayerOrException();
+                                    io.github.luigichopper.palimpsest.director.AnomalyDirector.get().getTracker(player.getUUID()).setTension(amt);
+                                    ctx.getSource().sendSuccess(() -> Component.literal("Set player tension to " + amt), false);
+                                    return 1;
+                                })
+                            )
+                        )
+                    )
                 )
         );
     }
