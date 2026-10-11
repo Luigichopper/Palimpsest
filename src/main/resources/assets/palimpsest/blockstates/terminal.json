@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "palimpsest:block/terminal" },
+    "facing=east": { "model": "palimpsest:block/terminal", "y": 90 },
+    "facing=south": { "model": "palimpsest:block/terminal", "y": 180 },
+    "facing=west": { "model": "palimpsest:block/terminal", "y": 270 }
+  }
+}

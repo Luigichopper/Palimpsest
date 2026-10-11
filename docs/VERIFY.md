@@ -127,3 +127,16 @@ This document records the exact resolution, source files, and verified signature
 - Batch structure capture: `StructureTemplate.fillFromWorld(Level, BlockPos, Vec3i, boolean includeEntities, List<Block> ignored)` and `placeInWorld`.
 - Slice/chunk iterative copying: Iterative block-by-block copying via `level.getBlockState(pos)` / `level.setBlock(pos, state, 2)` accompanied by custom NBT cloning for block entities using `BlockEntity.saveCustomOnly(lookup)` and `targetBe.loadCustomOnly(tag, lookup)` throttled through `TaskScheduler`.
 - **Source**: `net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate`, `BlockEntity`.
+
+### V16: Screen & GUI management in 26.3
+- **Screen access & switching**:
+  - `Minecraft.gui.setScreen(Screen screen)` replaces legacy `Minecraft.setScreen(Screen)`.
+  - `Minecraft.gui.screen()` returns active `Screen` (replaces direct `Minecraft.screen` field).
+- **GUI rendering pipeline**:
+  - `Screen.extractRenderState(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float partialTick)` replaces `render(GuiGraphics, int, int, float)`.
+  - `GuiGraphicsExtractor` methods: `fill(minX, minY, maxX, maxY, color)` and `text(Font, Component, x, y, color)`.
+- **Input events**:
+  - Keyboard: `Screen.keyPressed(KeyEvent event)` where `event.key()` returns GLFW keycode from `InputConstants`.
+  - Text input: `Screen.charTyped(CharacterEvent event)` where `event.codepointAsString()` yields typed character.
+- **Source**: `net.minecraft.client.gui.Gui`, `net.minecraft.client.gui.screens.Screen`, `net.minecraft.client.gui.GuiGraphicsExtractor`.
+

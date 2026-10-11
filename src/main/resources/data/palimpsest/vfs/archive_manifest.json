@@ -1,0 +1,9 @@
+{
+  "path": "/etc/archive_manifest.txt",
+  "is_directory": false,
+  "content": "PALIMPSEST ARCHIVE MANIFEST v1.0\nSeed Integrity: VERIFIED\nTarget World: Wren_Final_Singleplayer\nPrimary Recovery Node: /dev/terminal0\n",
+  "requires_flags": [],
+  "on_read_flags": ["archive:manifest_read"],
+  "owner": "root",
+  "permissions": "-rw-r--r--"
+}

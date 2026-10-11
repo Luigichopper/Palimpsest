@@ -62,3 +62,43 @@ jar {
 		rename { "${it}_${project.name}" }
 	}
 }
+
+tasks.register('verifyNoSpoilers') {
+	dependsOn processResources
+	doLast {
+		def secrets = []
+		def seedFile = file("private/seed.txt")
+		if (seedFile.exists()) {
+			def s = seedFile.text.trim()
+			if (!s.isEmpty()) secrets << s
+		}
+		def answersFile = file("private/answers.md")
+		if (answersFile.exists()) {
+			answersFile.readLines().each { line ->
+				def trimmed = line.trim()
+				if (trimmed.startsWith("|") && !trimmed.startsWith("| Puzzle ID") && !trimmed.startsWith("|---")) {
+					def parts = trimmed.split("\\|")
+					if (parts.length >= 4) {
+						def ans = parts[3].trim()
+						if (!ans.isEmpty()) secrets << ans
+					}
+				}
+			}
+		}
+
+		if (!secrets.isEmpty()) {
+			fileTree(processResources.destinationDir).each { f ->
+				if (f.isFile() && !f.name.endsWith(".png")) {
+					def text = f.text
+					secrets.each { secret ->
+						if (text.contains(secret)) {
+							throw new GradleException("SPOILER HYGIENE FAILURE: Plaintext secret '${secret}' found in built resource ${f.path}")
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+check.dependsOn verifyNoSpoilers

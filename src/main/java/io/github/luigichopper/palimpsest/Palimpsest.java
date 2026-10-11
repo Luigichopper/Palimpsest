@@ -32,6 +32,41 @@ public class Palimpsest implements ModInitializer {
         // Load configuration
         PalimpsestConfig.load(FabricLoader.getInstance().getConfigDir());
 
+        // Register Blocks and Block Entities
+        io.github.luigichopper.palimpsest.terminal.ModBlocks.register();
+
+        // Register Networking Payloads
+        net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.clientboundPlay().register(
+            io.github.luigichopper.palimpsest.net.OpenTerminalPayload.TYPE,
+            io.github.luigichopper.palimpsest.net.OpenTerminalPayload.STREAM_CODEC
+        );
+        net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.clientboundPlay().register(
+            io.github.luigichopper.palimpsest.net.TerminalOutputPayload.TYPE,
+            io.github.luigichopper.palimpsest.net.TerminalOutputPayload.STREAM_CODEC
+        );
+        net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.serverboundPlay().register(
+            io.github.luigichopper.palimpsest.net.TerminalCommandPayload.TYPE,
+            io.github.luigichopper.palimpsest.net.TerminalCommandPayload.STREAM_CODEC
+        );
+
+        // Register Server-side Packet Handlers
+        net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.registerGlobalReceiver(
+            io.github.luigichopper.palimpsest.net.TerminalCommandPayload.TYPE,
+            (payload, context) -> {
+                context.server().execute(() -> {
+                    io.github.luigichopper.palimpsest.terminal.TerminalManager.get().handleCommand(
+                        context.player(),
+                        payload.pos(),
+                        payload.commandLine()
+                    );
+                });
+            }
+        );
+
+        // Register ChapterPackLoader
+        net.fabricmc.fabric.api.resource.ResourceManagerHelper.get(net.minecraft.server.packs.PackType.SERVER_DATA)
+            .registerReloadListener(new io.github.luigichopper.palimpsest.chapter.ChapterPackLoader());
+
         // Initialize SeedGate
         seedGate = new SeedGate();
         LOGGER.info("SeedGate initialized (salt loaded: {})", !seedGate.getExpectedSalt().isEmpty());

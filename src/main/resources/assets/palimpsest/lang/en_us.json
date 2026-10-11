@@ -1,0 +1,7 @@
+{
+  "block.palimpsest.terminal": "Archive Terminal",
+  "item.palimpsest.terminal": "Archive Terminal",
+  "palimpsest.terminal.title": "PALIMPSEST RECOVERY CONSOLE",
+  "palimpsest.terminal.connected": "Connected to Archive Recovery Node",
+  "palimpsest.terminal.disconnected": "Terminal session ended."
+}

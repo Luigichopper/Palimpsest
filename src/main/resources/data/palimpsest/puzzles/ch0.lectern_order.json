@@ -1,0 +1,30 @@
+{
+  "id": "ch0.lectern_order",
+  "chapter": "ch0",
+  "kind": "text_answer",
+  "prompt_ref": "ch0.lectern_order.prompt",
+  "verify": {
+    "algo": "sha256",
+    "salt": "ch0.lectern_order:pep98f",
+    "hash": "302fb2c7d62fffa604ec7018bbc4e2757ae0e15b3775ea84f4a8327c6350131c"
+  },
+  "normalize": [
+    "lowercase",
+    "trim",
+    "collapse_ws",
+    "strip_punct"
+  ],
+  "on_solve": {
+    "grant_flags": [
+      "ch0.terminal_unlocked",
+      "ch0.logged_in_odette"
+    ],
+    "message_ref": "ch0.lectern_order.solved"
+  },
+  "hints": [
+    "ch0.lectern_order.hint1",
+    "ch0.lectern_order.hint2",
+    "ch0.lectern_order.hint3"
+  ],
+  "external": false
+}
