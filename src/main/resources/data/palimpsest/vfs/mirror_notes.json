@@ -1,0 +1,13 @@
+{
+  "path": "/home/odette/mirror_notes.txt",
+  "is_directory": false,
+  "content": "MIRROR & RESONANCE DIRECTIVE - NODE 2\n------------------------------------\nThe Mirror dimension does not generate on its own. It mirrors only what has been observed.\nAll geometry is inverted across the X threshold: (x -> -x - 1).\nFurthermore, physical resonance actively pairs Anchor and Mirror blocks:\nlight sources invert to soul fire, oak to dark oak, clear glass to tinted.\nIf you alter the original, expect the reflection to invert.\n- Odette\n",
+  "requires_flags": [
+    "ch1.complete"
+  ],
+  "on_read_flags": [
+    "ch2.mirror_notes_read"
+  ],
+  "owner": "odette",
+  "permissions": "-rw-r--r--"
+}

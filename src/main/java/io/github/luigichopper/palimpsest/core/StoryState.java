@@ -27,6 +27,7 @@ public class StoryState extends SavedData {
     private final Map<String, Long> puzzleSolves = new HashMap<>();
     private final Map<Identifier, LevelRegistryEntry> levelRegistry = new HashMap<>();
     private final Map<UUID, AnchorPos> mostUsedSpots = new HashMap<>();
+    private final List<io.github.luigichopper.palimpsest.resonance.PendingResonance> pendingResonances = new ArrayList<>();
 
     public static final Codec<Set<String>> SET_CODEC = Codec.STRING.listOf().<Set<String>>xmap(HashSet::new, ArrayList::new);
 
@@ -50,7 +51,10 @@ public class StoryState extends SavedData {
                 .forGetter(s -> s.levelRegistry),
             Codec.unboundedMap(UUIDUtil.STRING_CODEC, AnchorPos.CODEC)
                 .optionalFieldOf("most_used_spots", Collections.emptyMap())
-                .forGetter(s -> s.mostUsedSpots)
+                .forGetter(s -> s.mostUsedSpots),
+            io.github.luigichopper.palimpsest.resonance.PendingResonance.CODEC.listOf()
+                .optionalFieldOf("pending_resonances", Collections.emptyList())
+                .forGetter(s -> s.pendingResonances)
         ).apply(instance, StoryState::new)
     );
 
@@ -71,7 +75,8 @@ public class StoryState extends SavedData {
         Set<String> placedLandmarks,
         Map<String, Long> puzzleSolves,
         Map<Identifier, LevelRegistryEntry> levelRegistry,
-        Map<UUID, AnchorPos> mostUsedSpots
+        Map<UUID, AnchorPos> mostUsedSpots,
+        List<io.github.luigichopper.palimpsest.resonance.PendingResonance> pendingResonances
     ) {
         this.worldFlags.addAll(worldFlags);
         this.playerFlags.putAll(playerFlags);
@@ -80,6 +85,41 @@ public class StoryState extends SavedData {
         this.puzzleSolves.putAll(puzzleSolves);
         this.levelRegistry.putAll(levelRegistry);
         this.mostUsedSpots.putAll(mostUsedSpots);
+        this.pendingResonances.addAll(pendingResonances);
+    }
+
+    public synchronized void addPendingResonance(io.github.luigichopper.palimpsest.resonance.PendingResonance resonance) {
+        pendingResonances.add(resonance);
+        setDirty();
+    }
+
+    public synchronized int getPendingResonanceCount() {
+        return pendingResonances.size();
+    }
+
+    public synchronized List<io.github.luigichopper.palimpsest.resonance.PendingResonance> pollDueResonances(long currentTick, int maxCount) {
+        List<io.github.luigichopper.palimpsest.resonance.PendingResonance> due = new ArrayList<>();
+        Iterator<io.github.luigichopper.palimpsest.resonance.PendingResonance> it = pendingResonances.iterator();
+        while (it.hasNext() && due.size() < maxCount) {
+            io.github.luigichopper.palimpsest.resonance.PendingResonance res = it.next();
+            if (res.executeGameTime() <= currentTick) {
+                due.add(res);
+                it.remove();
+            }
+        }
+        if (!due.isEmpty()) {
+            setDirty();
+        }
+        return due;
+    }
+
+    public synchronized List<io.github.luigichopper.palimpsest.resonance.PendingResonance> getPendingResonances() {
+        return Collections.unmodifiableList(pendingResonances);
+    }
+
+    public synchronized void clearPendingResonances() {
+        pendingResonances.clear();
+        setDirty();
     }
 
     public void recordStationInteraction(UUID playerId, BlockPos pos, Identifier dim) {

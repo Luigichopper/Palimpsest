@@ -1,0 +1,39 @@
+{
+  "rules": [
+    {
+      "type": "INVERT",
+      "from": "minecraft:torch",
+      "to": "minecraft:soul_torch"
+    },
+    {
+      "type": "INVERT",
+      "from": "minecraft:wall_torch",
+      "to": "minecraft:soul_wall_torch"
+    },
+    {
+      "type": "INVERT",
+      "from": "minecraft:lantern",
+      "to": "minecraft:soul_lantern"
+    },
+    {
+      "type": "INVERT",
+      "from": "minecraft:campfire",
+      "to": "minecraft:soul_campfire"
+    },
+    {
+      "type": "INVERT",
+      "from": "minecraft:oak_planks",
+      "to": "minecraft:dark_oak_planks"
+    },
+    {
+      "type": "INVERT",
+      "from": "minecraft:glass",
+      "to": "minecraft:tinted_glass"
+    },
+    {
+      "type": "DELAY",
+      "minTicks": 20,
+      "maxTicks": 120
+    }
+  ]
+}

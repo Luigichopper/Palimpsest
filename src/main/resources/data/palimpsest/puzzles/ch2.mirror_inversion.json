@@ -1,0 +1,30 @@
+{
+  "id": "ch2.mirror_inversion",
+  "chapter": "ch2",
+  "kind": "text_answer",
+  "prompt_ref": "ch2.mirror_inversion.prompt",
+  "verify": {
+    "algo": "SHA-256",
+    "salt": "ch2.mirror_inversion:pep22i",
+    "hash": "1cda354a78aaf766a7a2bdc48c2a925c932cb14de44482b35b4eb60931dcfcfe"
+  },
+  "normalize": [
+    "lowercase",
+    "trim",
+    "collapse_ws",
+    "strip_punct"
+  ],
+  "on_solve": {
+    "grant_flags": [
+      "ch2.mirror_inversion_solved",
+      "ch2.resonance_calibrated"
+    ],
+    "message_ref": "ch2.mirror_inversion.solved"
+  },
+  "hints": [
+    "ch2.mirror_inversion.hint1",
+    "ch2.mirror_inversion.hint2",
+    "ch2.mirror_inversion.hint3"
+  ],
+  "external": false
+}

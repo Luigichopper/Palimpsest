@@ -92,7 +92,9 @@ public class LevelManager {
         config.setMirrorOverworldClocks(reg.mirrorClocks());
 
         // Select generator
-        if ("vanilla".equalsIgnoreCase(reg.generatorKind())) {
+        if ("mirror".equalsIgnoreCase(reg.generatorKind()) || reg.kind() == LevelKind.MIRROR) {
+            config.setGenerator(new io.github.luigichopper.palimpsest.mirror.MirrorChunkGenerator(server));
+        } else if ("vanilla".equalsIgnoreCase(reg.generatorKind())) {
             ServerLevel overworld = server.getLevel(Level.OVERWORLD);
             if (overworld != null) {
                 config.setGenerator(overworld.getChunkSource().getGenerator());
@@ -229,6 +231,7 @@ public class LevelManager {
 
         LOGGER.info("Evacuating players before deleting level '{}'...", id);
         Evacuator.evacuateLevel(level);
+        io.github.luigichopper.palimpsest.reflection.ReflectionManager.get().cleanupLevel(level);
 
         activeHandles.remove(id);
         StoryState state = StoryState.get(server);

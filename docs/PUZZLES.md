@@ -74,3 +74,25 @@ This document provides mechanism-level descriptions for all Chapter 0 puzzles wi
   - Correlating the manifest note with the observed station anomaly provides the divergence synchronization keyword.
 - **Input / Output**: Enter the terminal command `unlock <keyword>` to complete synchronization. Grants world flag `ch1.complete`, confirming Echo divergence and preparing the runtime level manager for the Mirror phase.
 
+---
+
+### P2.0 — Resonance Inversion (Chamber Material Duality)
+- **Location**: Mirror Dimension / Landmark L2 (Reflected Pylon).
+- **Carrier**: Block placement feedback between the Anchor world and the Mirror world.
+- **Mechanism**:
+  - The player experiments with the Resonance Bus by placing light and structural sources in the Anchor world and observing their paired inverse counterparts in the Mirror dimension (e.g. Torch $\leftrightarrow$ Soul Torch, Oak $\leftrightarrow$ Dark Oak, Glass $\leftrightarrow$ Tinted Glass).
+  - Cross-referencing the transposition rule described in Odette's notes yields the core resonance keyword.
+- **Input / Output**: Enter the terminal command `unlock <keyword>` to calibrate the bidirectional resonance bus. Grants world flags `ch2.mirror_inversion_solved` and `ch2.resonance_calibrated`.
+
+---
+
+### P2.1 — Reflection Divergence Observation (Telemetry Synchronization)
+- **Location**: Mirror Dimension / Movement Replay Track.
+- **Carrier**: Replay entity and telemetry log at `/var/log/reflection.log`.
+- **Mechanism**:
+  - The Reflection entity replays the player's past five minutes of movements within exact tolerance before reaching divergence timestamp $t_\text{diverge}$.
+  - At the divergence point, the Reflection abandons the recorded track, freezes its translation, and turns to observe the player.
+  - Consulting the subsystem telemetry log for the active capture state gives the command to synchronize the replayer.
+- **Input / Output**: Enter the terminal command `unlock <keyword>`. Grants world flag `ch2.complete`, completing Chapter 2 and unlocking the Version History subsystem for Chapter 3.
+
+

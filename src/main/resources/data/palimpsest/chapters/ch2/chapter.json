@@ -1,0 +1,8 @@
+{
+  "id": "ch2",
+  "order": 2,
+  "name": "Chapter 2: The Mirror",
+  "requires": [
+    "ch1.complete"
+  ]
+}

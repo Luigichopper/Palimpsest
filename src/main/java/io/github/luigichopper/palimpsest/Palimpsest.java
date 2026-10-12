@@ -14,8 +14,11 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.Commands;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.block.state.BlockState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,10 +93,12 @@ public class Palimpsest implements ModInitializer {
             LevelManager.initialize(server);
         });
 
-        // Register TaskScheduler and AnomalyDirector tick
+        // Register TaskScheduler, AnomalyDirector, ResonanceBus, and ReflectionManager tick
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             TaskScheduler.get().tick(server);
             io.github.luigichopper.palimpsest.director.AnomalyDirector.get().tick(server);
+            io.github.luigichopper.palimpsest.resonance.ResonanceBus.get().tick(server);
+            io.github.luigichopper.palimpsest.reflection.ReflectionManager.get().tick(server);
         });
 
         // Director event listeners: combat and damage tracking
@@ -115,20 +120,38 @@ public class Palimpsest implements ModInitializer {
             }
         });
 
-        // Director sound recording on block break (for SoundOfYou)
+        // Director sound recording and ResonanceBus on block break
         net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents.AFTER.register((level, player, pos, state, be) -> {
-            if (player instanceof ServerPlayer serverPlayer) {
+            if (player instanceof ServerPlayer serverPlayer && level instanceof ServerLevel sl) {
                 io.github.luigichopper.palimpsest.director.AnomalyDirector.get().getTracker(serverPlayer.getUUID())
                     .setLastPlayerSound(state.getSoundType().getBreakSound());
+
+                StoryState ss = StoryState.get(sl);
+                io.github.luigichopper.palimpsest.resonance.ResonanceBus.get().onBlockChanged(
+                    sl, pos, state, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), ss
+                );
             }
         });
 
-        // Player station interaction tracking (bed, crafting table, furnace)
+        // Player station interaction and ResonanceBus block placement tracking
         net.fabricmc.fabric.api.event.player.UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
-            if (!world.isClientSide() && hand == net.minecraft.world.InteractionHand.MAIN_HAND && player instanceof ServerPlayer sp) {
+            if (!world.isClientSide() && hand == net.minecraft.world.InteractionHand.MAIN_HAND && player instanceof ServerPlayer sp && world instanceof ServerLevel sl) {
                 var state = world.getBlockState(hitResult.getBlockPos());
                 if (state.is(net.minecraft.tags.BlockTags.BEDS) || state.is(net.minecraft.world.level.block.Blocks.CRAFTING_TABLE) || state.is(net.minecraft.world.level.block.Blocks.FURNACE) || state.is(net.minecraft.world.level.block.Blocks.BLAST_FURNACE) || state.is(net.minecraft.world.level.block.Blocks.SMOKER)) {
                     StoryState.get(sp.level()).recordStationInteraction(sp.getUUID(), hitResult.getBlockPos(), world.dimension().identifier());
+                }
+
+                net.minecraft.world.item.ItemStack held = player.getItemInHand(hand);
+                if (held.getItem() instanceof net.minecraft.world.item.BlockItem) {
+                    BlockPos placedPos = hitResult.getBlockPos().relative(hitResult.getDirection());
+                    sl.getServer().execute(() -> {
+                        BlockState placedState = sl.getBlockState(placedPos);
+                        if (!placedState.isAir()) {
+                            io.github.luigichopper.palimpsest.resonance.ResonanceBus.get().onBlockChanged(
+                                sl, placedPos, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), placedState, StoryState.get(sl)
+                            );
+                        }
+                    });
                 }
             }
             return net.minecraft.world.InteractionResult.PASS;

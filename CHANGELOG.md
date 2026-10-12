@@ -2,7 +2,39 @@
 
 All notable changes to the Palimpsest project will be documented in this file.
 
-## [Unreleased] - M5
+## [Unreleased] - M6
+### Added
+- Mirror Dimension & Reflected Chunk Generation:
+  - `MirrorChunkGenerator`: Produces chunks by reading already-generated Anchor chunks from storage at reflected coordinates ($x \to -x-1$).
+  - Ungenerated Anchor areas are rendered as void with dense ambient fog wall (`dimension_type/mirror.json`).
+  - Block state orientation mirroring using `BlockState.mirror(Mirror.FRONT_BACK)` for stairs, doors, signs, and chests.
+  - Mirrored block entity cloning with reflected coordinate transformation.
+  - `LevelManager.buildConfig` integrated with `MirrorChunkGenerator` for persistent level kind `MIRROR`.
+- Resonance Bus & Physical World Pairing:
+  - `ResonanceBus`: Pairs block state modifications between the Anchor world (`overworld`) and Mirror dimension (`mirror`).
+  - Configurable transposition rules loaded from `data/palimpsest/resonance/rules.json`: `INVERT` rules (e.g. Torch $\leftrightarrow$ Soul Torch, Lantern $\leftrightarrow$ Soul Lantern, Oak $\leftrightarrow$ Dark Oak, Glass $\leftrightarrow$ Tinted Glass) and `DELAY` intervals ([20, 120] ticks).
+  - ThreadLocal suppression flag guaranteeing complete loop prevention on programmatic block updates.
+  - Bounded resonance queue (`MAX_QUEUE_SIZE = 500`) protecting against memory exhaustion and lag.
+  - Global rate cap (`MAX_APPLY_PER_TICK = 32`) processing pending changes smoothly.
+  - Persistence of pending resonances across restarts via `StoryState` Codec serialization.
+  - Integration with player block break and item placement callbacks.
+- Reflection Subsystem & Recorded Movement Replay:
+  - `RecordedFrame`: Compact representation of player position, yaw, pitch, pose, and held item.
+  - `MovementRecorder`: Records player motion every 2 ticks into an 18,000-frame (~30 minute) ring buffer with automatic downsampling of older frames.
+  - `MovementReplayer`: Replays motion onto a Reflection entity (`EntityTypes.MANNEQUIN`). Supports `FAITHFUL`, `DELAYED(n)`, and `DIVERGE(t)` modes.
+  - In `DIVERGE` mode at tick $t$, the entity freezes translation and turns to stare directly at the player's eye coordinates.
+  - Eye-contact detection: Despawns Reflection upon sustained direct gaze ($> 0.95$ view dot product for 20 ticks).
+  - `ReflectionManager`: Coordinates recording and playback ticks; cleans up entities when levels unload or delete.
+- Chapter 2 Content & Puzzles:
+  - Chapter 2 definition in `chapters/ch2/chapter.json` (requires `ch1.complete`).
+  - Puzzle `ch2.mirror_inversion` (`INVERSION`, grants `ch2.mirror_inversion_solved` and `ch2.resonance_calibrated`).
+  - Puzzle `ch2.reflection_diverge` (`RECORDING`, grants `ch2.complete`).
+  - VFS files `/home/odette/mirror_notes.txt` and `/var/log/reflection.log`.
+  - Solutions recorded in `private/answers.md` and mechanism descriptions in `docs/PUZZLES.md`.
+  - Automated tests: `MirrorChunkGeneratorTest`, `ResonanceBusTest`, `MovementRecorderAndReplayerTest`, and expanded `PuzzleSelfTest`.
+  - Spoiler hygiene check (`verifyNoSpoilers`) passing.
+
+## M5 - Echo + Diff Lens + Chapter 1
 ### Added
 - Echo Dimension & Base Duplication System:
   - `EchoBuilder`: Choice of base center via player respawn data or world spawn.

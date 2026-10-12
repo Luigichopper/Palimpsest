@@ -1,0 +1,13 @@
+{
+  "path": "/var/log/reflection.log",
+  "is_directory": false,
+  "content": "REPLAY SUBSYSTEM - TELEMETRY\n----------------------------\nBuffer depth: 18000 frames (30 min ring window).\nSubsystem status: STREAM_ACTIVE.\nAnomaly warning: At divergence timestamp t_diverge, the phantom abandons trajectory.\nIt does not mimic anymore. It observes.\nDo not sustain eye contact.\n",
+  "requires_flags": [
+    "ch1.complete"
+  ],
+  "on_read_flags": [
+    "ch2.reflection_log_read"
+  ],
+  "owner": "system",
+  "permissions": "-rw-r--r--"
+}
