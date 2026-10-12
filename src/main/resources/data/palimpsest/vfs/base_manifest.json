@@ -1,0 +1,11 @@
+{
+  "path": "/echo/base_manifest.txt",
+  "is_directory": false,
+  "content": "ECHO SNAPSHOT MANIFEST\n======================\nRadius: 32 blocks from anchor station\nDiff transform: IDENTITY\nAnomalies expected: door stripping, torch snuffing, frame rotation drift, station entity.\nTo confirm divergence calibration, submit target keyword to terminal.\n",
+  "requires_flags": [
+    "ch0.complete"
+  ],
+  "on_read_flags": [],
+  "owner": "odette",
+  "permissions": "-rw-r--r--"
+}

@@ -1,0 +1,30 @@
+{
+  "id": "ch1.spot_diff",
+  "chapter": "ch1",
+  "kind": "diff_pattern",
+  "prompt_ref": "ch1.spot_diff.prompt",
+  "verify": {
+    "algo": "SHA-256",
+    "salt": "ch1.spot_diff:pep44s",
+    "hash": "568697dea5d6bee27b804aec65ff5282160b47d9c56cbcac6913db12bcf5c382"
+  },
+  "normalize": [
+    "lowercase",
+    "trim",
+    "collapse_ws",
+    "strip_punct"
+  ],
+  "on_solve": {
+    "grant_flags": [
+      "ch1.spot_diff_solved",
+      "ch1.lens_calibrated"
+    ],
+    "message_ref": "ch1.spot_diff.solved"
+  },
+  "hints": [
+    "ch1.spot_diff.hint1",
+    "ch1.spot_diff.hint2",
+    "ch1.spot_diff.hint3"
+  ],
+  "external": false
+}

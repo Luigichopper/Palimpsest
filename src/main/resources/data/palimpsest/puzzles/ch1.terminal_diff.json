@@ -1,0 +1,29 @@
+{
+  "id": "ch1.terminal_diff",
+  "chapter": "ch1",
+  "kind": "terminal_command",
+  "prompt_ref": "ch1.terminal_diff.prompt",
+  "verify": {
+    "algo": "SHA-256",
+    "salt": "ch1.terminal_diff:pep77d",
+    "hash": "286a71b5ac26927e5da5fb6dda315798ecfc5593638e3268aa25d09ae94a1dff"
+  },
+  "normalize": [
+    "lowercase",
+    "trim",
+    "collapse_ws",
+    "strip_punct"
+  ],
+  "on_solve": {
+    "grant_flags": [
+      "ch1.complete"
+    ],
+    "message_ref": "ch1.terminal_diff.solved"
+  },
+  "hints": [
+    "ch1.terminal_diff.hint1",
+    "ch1.terminal_diff.hint2",
+    "ch1.terminal_diff.hint3"
+  ],
+  "external": false
+}

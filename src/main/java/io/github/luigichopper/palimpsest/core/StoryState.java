@@ -3,6 +3,7 @@ package io.github.luigichopper.palimpsest.core;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.luigichopper.palimpsest.level.LevelRegistryEntry;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
@@ -25,6 +26,7 @@ public class StoryState extends SavedData {
     private final Set<String> placedLandmarks = new HashSet<>();
     private final Map<String, Long> puzzleSolves = new HashMap<>();
     private final Map<Identifier, LevelRegistryEntry> levelRegistry = new HashMap<>();
+    private final Map<UUID, AnchorPos> mostUsedSpots = new HashMap<>();
 
     public static final Codec<Set<String>> SET_CODEC = Codec.STRING.listOf().<Set<String>>xmap(HashSet::new, ArrayList::new);
 
@@ -45,7 +47,10 @@ public class StoryState extends SavedData {
                 .forGetter(s -> s.puzzleSolves),
             Codec.unboundedMap(Identifier.CODEC, LevelRegistryEntry.CODEC)
                 .optionalFieldOf("levels", Collections.emptyMap())
-                .forGetter(s -> s.levelRegistry)
+                .forGetter(s -> s.levelRegistry),
+            Codec.unboundedMap(UUIDUtil.STRING_CODEC, AnchorPos.CODEC)
+                .optionalFieldOf("most_used_spots", Collections.emptyMap())
+                .forGetter(s -> s.mostUsedSpots)
         ).apply(instance, StoryState::new)
     );
 
@@ -65,7 +70,8 @@ public class StoryState extends SavedData {
         Map<UUID, AnchorPos> lastAnchorPositions,
         Set<String> placedLandmarks,
         Map<String, Long> puzzleSolves,
-        Map<Identifier, LevelRegistryEntry> levelRegistry
+        Map<Identifier, LevelRegistryEntry> levelRegistry,
+        Map<UUID, AnchorPos> mostUsedSpots
     ) {
         this.worldFlags.addAll(worldFlags);
         this.playerFlags.putAll(playerFlags);
@@ -73,6 +79,16 @@ public class StoryState extends SavedData {
         this.placedLandmarks.addAll(placedLandmarks);
         this.puzzleSolves.putAll(puzzleSolves);
         this.levelRegistry.putAll(levelRegistry);
+        this.mostUsedSpots.putAll(mostUsedSpots);
+    }
+
+    public void recordStationInteraction(UUID playerId, BlockPos pos, Identifier dim) {
+        mostUsedSpots.put(playerId, new AnchorPos(dim, pos.getX(), pos.getY(), pos.getZ(), 0, 0));
+        setDirty();
+    }
+
+    public AnchorPos getMostUsedSpot(UUID playerId) {
+        return mostUsedSpots.get(playerId);
     }
 
     public static StoryState get(ServerLevel level) {

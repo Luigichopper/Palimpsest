@@ -52,3 +52,25 @@ This document provides mechanism-level descriptions for all Chapter 0 puzzles wi
   - The 3 rotational positions represent a 3-digit octal (base-8) number.
   - Converting the octal number into decimal yields the calibration frequency code.
 - **Input / Output**: Enter the frequency via terminal command `unlock <code>` (or step onto the calibrated threshold). Solving this puzzle grants the world flag `ch0.complete`, triggers the narrative partition collapse sequence, safely returns the player to the Anchor world, and cleans up the temporary Annex dimension.
+
+---
+
+### P1.0 — Diff Lens Calibration (Spot Difference Pattern)
+- **Location**: Echo Dimension (opened upon entering the duplicated player base).
+- **Carrier**: Block geometry discrepancies revealed through the Diff Lens tool.
+- **Mechanism**:
+  - Scanning the Echo dimension against the Anchor world highlights subtle physical mutations (e.g. detached doors, extinguished torches, offset item frames).
+  - Isolating the changed blocks in the base's primary observation area forms a visual character glyph / semantic keyword.
+- **Input / Output**: Submit the observed word into the terminal console via `unlock <keyword>`. Grants flags `ch1.spot_diff_solved` and `ch1.lens_calibrated`.
+
+---
+
+### P1.1 — Echo Station Divergence (Terminal Node Re-synchronization)
+- **Location**: Landmark L0 / Echo Station Console.
+- **Carrier**: Odette's `/home/odette/echo_notes.txt` and the Double entity located at the player's most-frequented station.
+- **Mechanism**:
+  - The Double stands at the coordinate where the player interacted most frequently with functional stations (bed, crafting table, or furnace).
+  - The log files note that the copy begins to learn and branch away from the original recording.
+  - Correlating the manifest note with the observed station anomaly provides the divergence synchronization keyword.
+- **Input / Output**: Enter the terminal command `unlock <keyword>` to complete synchronization. Grants world flag `ch1.complete`, confirming Echo divergence and preparing the runtime level manager for the Mirror phase.
+

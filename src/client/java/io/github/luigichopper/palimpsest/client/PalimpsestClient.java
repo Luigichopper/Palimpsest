@@ -54,5 +54,20 @@ public class PalimpsestClient implements ClientModInitializer {
                 });
             }
         );
+
+        // Register DiffOverlayPayload receiver
+        net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.registerGlobalReceiver(
+            io.github.luigichopper.palimpsest.net.DiffOverlayPayload.TYPE,
+            (payload, context) -> {
+                context.client().execute(() -> {
+                    DiffOverlayHandler.setDiffs(payload.entries());
+                });
+            }
+        );
+
+        // Register client tick for diff particle visualization
+        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            DiffOverlayHandler.tick(client);
+        });
     }
 }

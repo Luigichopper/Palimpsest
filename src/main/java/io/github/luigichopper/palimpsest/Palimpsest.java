@@ -32,8 +32,9 @@ public class Palimpsest implements ModInitializer {
         // Load configuration
         PalimpsestConfig.load(FabricLoader.getInstance().getConfigDir());
 
-        // Register Blocks and Block Entities
+        // Register Blocks and Items
         io.github.luigichopper.palimpsest.terminal.ModBlocks.register();
+        io.github.luigichopper.palimpsest.item.ModItems.register();
 
         // Register Networking Payloads
         net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.clientboundPlay().register(
@@ -51,6 +52,10 @@ public class Palimpsest implements ModInitializer {
         net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.clientboundPlay().register(
             io.github.luigichopper.palimpsest.net.OpenJournalPayload.TYPE,
             io.github.luigichopper.palimpsest.net.OpenJournalPayload.STREAM_CODEC
+        );
+        net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.clientboundPlay().register(
+            io.github.luigichopper.palimpsest.net.DiffOverlayPayload.TYPE,
+            io.github.luigichopper.palimpsest.net.DiffOverlayPayload.STREAM_CODEC
         );
         net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.serverboundPlay().register(
             io.github.luigichopper.palimpsest.net.TerminalCommandPayload.TYPE,
@@ -116,6 +121,17 @@ public class Palimpsest implements ModInitializer {
                 io.github.luigichopper.palimpsest.director.AnomalyDirector.get().getTracker(serverPlayer.getUUID())
                     .setLastPlayerSound(state.getSoundType().getBreakSound());
             }
+        });
+
+        // Player station interaction tracking (bed, crafting table, furnace)
+        net.fabricmc.fabric.api.event.player.UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
+            if (!world.isClientSide() && hand == net.minecraft.world.InteractionHand.MAIN_HAND && player instanceof ServerPlayer sp) {
+                var state = world.getBlockState(hitResult.getBlockPos());
+                if (state.is(net.minecraft.tags.BlockTags.BEDS) || state.is(net.minecraft.world.level.block.Blocks.CRAFTING_TABLE) || state.is(net.minecraft.world.level.block.Blocks.FURNACE) || state.is(net.minecraft.world.level.block.Blocks.BLAST_FURNACE) || state.is(net.minecraft.world.level.block.Blocks.SMOKER)) {
+                    StoryState.get(sp.level()).recordStationInteraction(sp.getUUID(), hitResult.getBlockPos(), world.dimension().identifier());
+                }
+            }
+            return net.minecraft.world.InteractionResult.PASS;
         });
 
         // Player join events (Evacuator safety check and SeedGate notification)

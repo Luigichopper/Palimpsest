@@ -2,7 +2,31 @@
 
 All notable changes to the Palimpsest project will be documented in this file.
 
-## [Unreleased] - M4
+## [Unreleased] - M5
+### Added
+- Echo Dimension & Base Duplication System:
+  - `EchoBuilder`: Choice of base center via player respawn data or world spawn.
+  - Sliced level duplication via `TaskScheduler` (`EchoCopyTask` with 2ms per-tick slice budget) ensuring radius-32 region copies never exceed server tick budgets.
+  - Asynchronous and synchronous (`copyDirect`) region duplication routines including block entity data (chests, signs, lecterns, item frames).
+  - Chapter-specific mutations: doors removed, torches extinguished, item frames rotated +1, chests populated with journal pages, and the "Double" entity (custom Mannequin) placed at the player's most-frequented station.
+  - Station interaction tracking in `StoryState` via `UseBlockCallback` (recording player bed, crafting table, and furnace interactions).
+  - Runtime Echo level configuration: mob spawning disabled, per-level time frozen.
+  - `LevelManager.openEcho`: Creates and opens runtime Echo levels, triggers `EchoBuilder`, and teleports player to base center.
+- Diff Lens & LevelDiffService:
+  - `LevelDiffService`: Server-authoritative comparison of two levels or block provider functions over a specified bounding region.
+  - Support for `IDENTITY` (Anchor<->Echo, Anchor<->Backup) and `REFLECT` (Anchor<->Mirror) coordinate transforms.
+  - Diffs categorized into `ADDED`, `REMOVED`, and `CHANGED` states, sorted by distance from center, and capped to configured max results (default 2048).
+  - `DiffLensItem`: Scanner item triggering diff requests and sending S2C `DiffOverlayPayload`.
+  - Client-side `DiffOverlayHandler`: Multi-colored particle visualization (Green for ADDED, Red for REMOVED, Cyan for CHANGED) rendered in client tick events.
+- Chapter 1 Progression & Content:
+  - Chapter 1 definition in `chapters/ch1/chapter.json` (requires `ch0.complete`).
+  - Puzzle `ch1.spot_diff` (`diff_pattern`) and `ch1.terminal_diff` (`terminal_command`).
+  - VFS files `/home/odette/echo_notes.txt` and `/echo/base_manifest.txt`.
+  - Solutions recorded in `private/answers.md` and mechanism descriptions in `docs/PUZZLES.md`.
+  - Automated tests: `LevelDiffServiceTest` (identical regions, planted diffs, distance sorting, result capping, reflect transform) and expanded `PuzzleSelfTest`.
+  - Spoiler hygiene check (`verifyNoSpoilers`) passing.
+
+## M4 - Chapter 0 Content
 ### Added
 - Landmarks L0 (Cabin) & L1 (Annex Entrance Bunker):
   - `LandmarkDef` and `landmarks.json` schema.

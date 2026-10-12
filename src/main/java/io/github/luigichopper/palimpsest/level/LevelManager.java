@@ -147,6 +147,15 @@ public class LevelManager {
 
         RuntimeLevelHandle handle = fantasy.openTemporaryLevel(echoId, config);
         activeHandles.put(echoId, handle);
+
+        ServerLevel echoWorld = server.getLevel(handle.getRegistryKey());
+        if (echoWorld != null) {
+            StoryState storyState = StoryState.get(server);
+            io.github.luigichopper.palimpsest.echo.EchoBuilder.build(player, echoWorld, storyState);
+            net.minecraft.core.BlockPos center = io.github.luigichopper.palimpsest.echo.EchoBuilder.resolveBaseCenter(player, server);
+            player.teleportTo(echoWorld, center.getX() + 0.5, center.getY() + 1.0, center.getZ() + 0.5, java.util.Collections.emptySet(), player.getYRot(), player.getXRot(), true);
+        }
+
         return handle;
     }
 

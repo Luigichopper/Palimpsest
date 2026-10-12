@@ -1,0 +1,13 @@
+{
+  "path": "/home/odette/echo_notes.txt",
+  "is_directory": false,
+  "content": "ECHO EXPERIMENT LOG - NODE 1\n----------------------------\nThe anchor base was duplicated into dimension space /echo.\nWhen scanning the copy, the baseline geometry is identical, but mutations manifest:\ndoors detach, flame sources extinguish, and an entity appears near the most-frequented station.\nUse the Diff Lens to survey the divergence. Type 'diff' or check anomalies.\nRemember: shadow divergences indicate where memory fails first.\n- Odette\n",
+  "requires_flags": [
+    "ch0.complete"
+  ],
+  "on_read_flags": [
+    "ch1.echo_notes_read"
+  ],
+  "owner": "odette",
+  "permissions": "-rw-r--r--"
+}
